@@ -1,4 +1,6 @@
 require "fileutils"
+require File.expand_path("lib/directory")
+
 args = Hash[ ARGV.join(' ').scan(/--?([^\s]+)(?:\s(\S+))?/) ]
 
 if args.key?('help')
@@ -26,6 +28,8 @@ else
   end
   target_directory = args['directory']
 end
+
+c = Directory.new(target_directory, recursive=true)
 
 equal_files = Array.new
 Dir.foreach(target_directory) { |x| equal_files.push(x) if FileUtils.cmp(target_file_path, x) and target_file_path != x }
