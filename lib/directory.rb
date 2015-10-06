@@ -16,7 +16,9 @@ class Directory
     @local_files =  Dir.entries(@absolute_path).select {|entry| !File.directory? File.join(@absolute_path,entry) and !(entry =='.' || entry == '..') }
     @local_dirs =  Dir.entries(@absolute_path).select {|entry| File.directory? File.join(@absolute_path,"#{entry}/") and !(entry =='.' || entry == '..') }
 
-    self.get_children()
+    if recursive
+      self.get_children()
+    end
   end
 
   def get_children()
