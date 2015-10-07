@@ -1,34 +1,52 @@
+$DEBUG = true
 class Directory
 
   attr_reader :local_files
   attr_reader :local_dirs
 
-  def initialize(root, recursive=false, parent="")
-    @root = root
-    @recursive = recursive
-    @parent = parent
-    if @parent == ""
-      @absolute_path = "."
+  def initialize(root, recursive=false)
+    Dir.chdir(root)
+    @root = Dir.pwd
+    @dirs = Queue.new
+    @files = Queue.new
+
+
+    if !recursive
+      self.list_dir(@root)
     else
-      @absolute_path = "#{@parent}/#{root}"
-    end
-
-    @local_files =  Dir.entries(@absolute_path).select {|entry| !File.directory? File.join(@absolute_path,entry) and !(entry =='.' || entry == '..') }
-    @local_dirs =  Dir.entries(@absolute_path).select {|entry| File.directory? File.join(@absolute_path,"#{entry}/") and !(entry =='.' || entry == '..') }
-
-    if recursive
-      self.get_children()
+      @dirs.push(@root)
+      while !@dirs.empty?
+        self.list_dir(@dirs.pop)
+      end
     end
   end
 
-  def get_children()
-    @local_dir_obj  = []
-    for dir in @local_dirs
-      @local_dir_obj  << Directory.new(dir, true, @absolute_path)
+  def list_dir(dir)
+    Dir.chdir(dir)
+    local_dirs = Queue.new
+    local_files = Queue.new
+
+    local_dirs =  Dir.entries(".").select {|entry| File.directory? entry and !(entry =='.' || entry == '..') }
+    local_files =  Dir.entries(".").select {|entry| !File.directory? entry }
+
+    while !local_dirs.empty?
+      @dirs.push(Dir.pwd+"/"+local_dirs.pop)
     end
+    while !local_files.empty?
+      @files.push(Dir.pwd+"/"+local_files.pop)
+    end
+    #@files << local_files
+    #@dirs << local_dirs
   end
 
   def to_s
-    "Files: #{@local_files}\nDirectories: #{@local_dirs}"
+    tmp_files = @files
+    s_files = Array.new
+
+    while !tmp_files.empty?
+      s_files << tmp_files.pop
+    end
+
+    "Files:\n" + s_files.join("\n")
   end
 end

@@ -30,8 +30,7 @@ else
 end
 
 c = Directory.new(target_directory, recursive=true)
+puts c
 
-equal_files = Array.new
-Dir.foreach(target_directory) { |x| equal_files.push(x) if FileUtils.cmp(target_file_path, x) and target_file_path != x }
-
-puts equal_files
+#equal_files = Array.new
+#Dir.foreach(target_directory) { |x| equal_files.push(x) if FileUtils.cmp(target_file_path, x) and target_file_path != x }
