@@ -1,4 +1,3 @@
-$DEBUG = true
 class Directory
 
   attr_reader :local_files
@@ -9,7 +8,6 @@ class Directory
     @root = Dir.pwd
     @dirs = Queue.new
     @files = Queue.new
-
 
     if !recursive
       self.list_dir(@root)
@@ -22,21 +20,14 @@ class Directory
   end
 
   def list_dir(dir)
-    Dir.chdir(dir)
-    local_dirs = Queue.new
-    local_files = Queue.new
-
-    local_dirs =  Dir.entries(".").select {|entry| File.directory? entry and !(entry =='.' || entry == '..') }
-    local_files =  Dir.entries(".").select {|entry| !File.directory? entry }
-
-    while !local_dirs.empty?
-      @dirs.push(Dir.pwd+"/"+local_dirs.pop)
+    d = Dir.new(dir)
+    while current_elem = d.read
+      if !File.directory? d.path+"/"+current_elem
+        @files.push(d.path+"/"+current_elem)
+      elsif !(current_elem =='.' || current_elem == '..')
+        @dirs.push(d.path+"/"+current_elem)
+      end
     end
-    while !local_files.empty?
-      @files.push(Dir.pwd+"/"+local_files.pop)
-    end
-    #@files << local_files
-    #@dirs << local_dirs
   end
 
   def to_s
