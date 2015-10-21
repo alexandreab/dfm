@@ -1,34 +1,23 @@
 class Directory
 
-  attr_reader :local_files
-  attr_reader :local_dirs
+  attr_reader :files
+  attr_reader :dirs
 
-  def initialize(root, recursive=false, parent="")
-    @root = root
-    @recursive = recursive
-    @parent = parent
-    if @parent == ""
-      @absolute_path = "."
+  def initialize(root, recursive=false)
+    Dir.chdir(root)
+    @root = Dir.pwd
+
+    if !recursive
+      f_regex = root
     else
-      @absolute_path = "#{@parent}/#{root}"
+      f_regex = "#{root}/**/*"
     end
 
-    @local_files =  Dir.entries(@absolute_path).select {|entry| !File.directory? File.join(@absolute_path,entry) and !(entry =='.' || entry == '..') }
-    @local_dirs =  Dir.entries(@absolute_path).select {|entry| File.directory? File.join(@absolute_path,"#{entry}/") and !(entry =='.' || entry == '..') }
-
-    if recursive
-      self.get_children()
-    end
-  end
-
-  def get_children()
-    @local_dir_obj  = []
-    for dir in @local_dirs
-      @local_dir_obj  << Directory.new(dir, true, @absolute_path)
-    end
+    @files = Array.new
+    Dir.glob(f_regex){|f| @files.push(f) if !File.directory? f}
   end
 
   def to_s
-    "Files: #{@local_files}\nDirectories: #{@local_dirs}"
+    "Files:\n" + @files.join("\n")
   end
 end

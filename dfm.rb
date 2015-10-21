@@ -1,6 +1,8 @@
 require "fileutils"
+require File.expand_path("lib/comparator")
 require File.expand_path("lib/directory")
 
+#FIXME This doesn't work for file names with whitespace
 args = Hash[ ARGV.join(' ').scan(/--?([^\s]+)(?:\s(\S+))?/) ]
 
 if args.key?('help')
@@ -29,9 +31,8 @@ else
   target_directory = args['directory']
 end
 
-c = Directory.new(target_directory, recursive=true)
+c = Comparator.new
+c.compare(target_directory, target_file_path)
 
-equal_files = Array.new
-Dir.foreach(target_directory) { |x| equal_files.push(x) if FileUtils.cmp(target_file_path, x) and target_file_path != x }
-
-puts equal_files
+#equal_files = Array.new
+#Dir.foreach(target_directory) { |x| equal_files.push(x) if FileUtils.cmp(target_file_path, x) and target_file_path != x }
