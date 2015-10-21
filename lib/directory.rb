@@ -1,43 +1,23 @@
 class Directory
 
-  attr_reader :local_files
-  attr_reader :local_dirs
+  attr_reader :files
+  attr_reader :dirs
 
   def initialize(root, recursive=false)
     Dir.chdir(root)
     @root = Dir.pwd
-    @dirs = Stack.new
-    @files = Stack.new
 
     if !recursive
-      self.list_dir(@root)
+      f_regex = root
     else
-      @dirs.push(@root)
-      while !@dirs.empty?
-        self.list_dir(@dirs.pop)
-      end
+      f_regex = "#{root}/**/*"
     end
-  end
 
-  def list_dir(dir)
-    d = Dir.new(dir)
-    while current_elem = d.read
-      if !File.directory? d.path+"/"+current_elem
-        @files.push(d.path+"/"+current_elem)
-      elsif !(current_elem =='.' || current_elem == '..')
-        @dirs.push(d.path+"/"+current_elem)
-      end
-    end
+    @files = Array.new
+    Dir.glob(f_regex){|f| @files.push(f) if !File.directory? f}
   end
 
   def to_s
-    tmp_files = @files
-    s_files = Array.new
-
-    while !tmp_files.empty?
-      s_files << tmp_files.pop
-    end
-
-    "Files:\n" + s_files.join("\n")
+    "Files:\n" + @files.join("\n")
   end
 end
