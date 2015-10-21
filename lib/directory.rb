@@ -6,8 +6,8 @@ class Directory
   def initialize(root, recursive=false)
     Dir.chdir(root)
     @root = Dir.pwd
-    @dirs = Queue.new
-    @files = Queue.new
+    @dirs = Stack.new
+    @files = Stack.new
 
     if !recursive
       self.list_dir(@root)
