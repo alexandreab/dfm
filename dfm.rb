@@ -32,7 +32,4 @@ else
 end
 
 c = Comparator.new
-c.compare(target_directory, target_file_path)
-
-#equal_files = Array.new
-#Dir.foreach(target_directory) { |x| equal_files.push(x) if FileUtils.cmp(target_file_path, x) and target_file_path != x }
+c.compare(target_directory, File.expand_path(target_file_path))

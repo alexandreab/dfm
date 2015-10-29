@@ -14,7 +14,7 @@ class Directory
     end
 
     @files = Array.new
-    Dir.glob(f_regex){|f| @files.push(f) if !File.directory? f}
+    Dir.glob(f_regex){|f| @files.push(File.expand_path(f)) if !File.directory? f}
   end
 
   def to_s
