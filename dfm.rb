@@ -1,3 +1,5 @@
+#!/usr/bin/ruby -w
+# -*- coding: utf-8 -*-
 require "fileutils"
 require File.expand_path("lib/comparator")
 require File.expand_path("lib/directory")
@@ -13,11 +15,9 @@ if args.key?('help')
 end
 
 if not args.key?('file')
-  abort("dfm: missig argument file.\n"+
-        "It is necessary for now.\n"+
-        "Try 'dfm --help' for more information.")
+  target_file_path = nil
 else
-  target_file_path = args['file']
+  target_file_path = File.expand_path(args['file'])
 end
 
 if not args.key?('directory')
@@ -31,5 +31,20 @@ else
   target_directory = args['directory']
 end
 
+if not args.key?('action')
+  action = "no-delete"
+elsif args['action']=="delete"
+  action = "delete"
+elsif args['action']=="ask-to-delete"
+  action = "ask-to-delete"
+else
+  abort("dfm: invalid argument action.\n"+
+        "Try 'dfm --help' for more information.")
+end
+
 c = Comparator.new
-c.compare(target_directory, File.expand_path(target_file_path))
+c.compare(target_directory, target_file_path, action)
+
+puts c
+
+c.action(action)

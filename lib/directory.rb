@@ -3,7 +3,7 @@ class Directory
   attr_reader :files
   attr_reader :dirs
 
-  def initialize(root, recursive=false)
+  def initialize(root, recursive=true)
     Dir.chdir(root)
     @root = Dir.pwd
 
